@@ -4,7 +4,7 @@ const handler = async () => {
     headers: {
       "Content-Type": "text/plain",
     },
-    body: 2 + 2,
+    body: "john".toUpperCase(),
   };
 };
 
