@@ -386,3 +386,8 @@ body {
 .still-loading {
   animation: 0.6s loadingflashing ease-in-out alternate infinite;
 }
+
+textarea.form-field {
+  height: 150px;
+  resize: none;
+}
