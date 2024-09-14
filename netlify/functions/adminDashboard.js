@@ -1,13 +1,10 @@
-const { MongoClient } = require("mongodb");
+const getDbClient = require("../../lib/getDbClient");
 const isAdmin = require("../../lib/isAdmin");
 const escape = require("escape-html");
 
-const cookie = require("cookie");
-
 const handler = async (event) => {
   if (isAdmin(event)) {
-    const client = new MongoClient(process.env.MONGO_KEY);
-    await client.connect();
+    const client = await getDbClient();
 
     const pets = await client.db().collection("pets").find().toArray();
     await client.close();
@@ -46,7 +43,9 @@ function generateHTML(pets) {
                 <a class="action-btn" href="/admin/edit-pet?id=${
                   pet._id
                 }">Edit</a>
-                <button class="action-btn" data-id="${pet._id}">Delete</button>
+                <button onClick="handleDelete('${
+                  pet._id
+                }', this)" class="action-btn">Delete</button>
                 </div>
             </div>
             <div class="pet-card-photo">

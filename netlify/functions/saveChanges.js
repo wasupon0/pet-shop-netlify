@@ -1,6 +1,7 @@
 const sanitizeHTML = require("sanitize-html");
 const getDbClient = require("../../lib/getDbClient");
 const isAdmin = require("../../lib/isAdmin");
+const { ObjectId } = require("mongodb");
 
 function cleanUp(x) {
   return sanitizeHTML(x, {
@@ -37,10 +38,23 @@ const handler = async (event) => {
 
   if (isAdmin(event)) {
     // save to db
-    const client = await getDbClient();
-    await client.db().collection("pets").insertOne(pet);
-    await client.close();
+    if (!ObjectId.isValid(body.id)) {
+      return {
+        statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ success: false }),
+      };
+    }
 
+    const client = await getDbClient();
+    await client
+      .db()
+      .collection("pets")
+      .findOneAndUpdate({ _id: new ObjectId(body.id) }, { $set: pet });
+
+    await client.close();
     return {
       statusCode: 200,
       headers: {

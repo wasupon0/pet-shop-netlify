@@ -14,22 +14,17 @@ const handler = async (event) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ success: false }),
       };
     }
 
     const client = await getDbClient();
 
-    const pet = await client
+    await client
       .db()
       .collection("pets")
-      .findOne({ _id: ObjectId.createFromHexString(body.id) });
+      .deleteOne({ _id: ObjectId.createFromHexString(body.id) });
     await client.close();
-
-    pet.name = escape(pet.name);
-    pet.birthYear = escape(pet.birthYear);
-    pet.species = escape(pet.species);
-    pet.description = escape(pet.description);
 
     return {
       statusCode: 200,
@@ -37,7 +32,7 @@ const handler = async (event) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify(pet),
+      body: JSON.stringify({ success: true }),
     };
   }
 
