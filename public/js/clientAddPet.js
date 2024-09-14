@@ -18,5 +18,8 @@ document
     });
 
     const petResponse = await petPromise.json();
-    window.location = "/admin";
+
+    if (petResponse.success) {
+      window.location = "/admin";
+    }
   });

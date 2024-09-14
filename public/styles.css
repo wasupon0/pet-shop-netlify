@@ -287,7 +287,7 @@ body {
 
 /* Admin Pages CSS */
 .form-field {
-  border: 1px solid grey;
+  border: 1px solid rgba(167, 167, 167, 0.24);
   box-sizing: border-box;
   display: block;
   font-family: inherit;
