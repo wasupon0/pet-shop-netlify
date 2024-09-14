@@ -1,12 +1,13 @@
 let serverSignature;
 let serverTimestamp;
+let cloudinaryReturnObject;
+let isFormLocked = false;
 
 async function getSignature() {
   const signaturePromise = await fetch("/.netlify/functions/getSignature");
   const response = await signaturePromise.json();
   serverSignature = response.signature;
   serverTimestamp = response.timestamp;
-
   console.log(response);
 }
 
@@ -15,6 +16,9 @@ getSignature();
 document
   .querySelector("#file-field")
   .addEventListener("change", async function () {
+    isFormLocked = true;
+    document.querySelector("#submit-btn").style.opacity = 0.1;
+
     const data = new FormData();
     data.append("file", document.querySelector("#file-field").files[0]);
     data.append("api_key", "697732345467119");
@@ -36,7 +40,11 @@ document
     );
 
     console.log(cloudinaryResponse.data);
+    cloudinaryReturnObject = cloudinaryResponse.data;
     document.querySelector(
       "#photo-preview"
     ).innerHTML = `<img src="https://res.cloudinary.com/for-next-image/image/upload/w_190,h_190,c_fill/${cloudinaryResponse.data.public_id}.jpg" />`;
+
+    isFormLocked = false;
+    document.querySelector("#submit-btn").style.opacity = 1;
   });

@@ -1,7 +1,15 @@
 const sanitizeHTML = require("sanitize-html");
 const getDbClient = require("../../lib/getDbClient");
 const isAdmin = require("../../lib/isAdmin");
+const cloudinary = require("cloudinary").v2;
 const { ObjectId } = require("mongodb");
+
+const cloudinaryConfig = cloudinary.config({
+  cloud_name: "for-next-image",
+  api_key: "697732345467119",
+  api_secret: process.env.CLOUDINARYSECRET,
+  secure: true,
+});
 
 function cleanUp(x) {
   return sanitizeHTML(x, {
@@ -34,6 +42,18 @@ const handler = async (event) => {
 
   if (pet.species !== "cat" && pet.species !== "dog") {
     pet.species = "dog";
+  }
+
+  const expectedSignature = cloudinary.utils.api_sign_request(
+    {
+      public_id: body.public_id,
+      version: body.version,
+    },
+    cloudinaryConfig.api_secret
+  );
+
+  if (expectedSignature === body.signature) {
+    pet.photo = body.public_id;
   }
 
   if (isAdmin(event)) {
